@@ -40,6 +40,8 @@ func Key(cmd *cobra.Command, name string, valueType models.ConfigType, short str
 		keyInt(flagSet, name, short, usage)
 	case IsBool:
 		keyBool(flagSet, name, short, usage)
+	case IsUint:
+		keyUint(flagSet, name, short, usage)
 	}
 
 	var flag *pflag.Flag
@@ -75,6 +77,15 @@ func keyInt(flagSet *pflag.FlagSet, name string, short string, usage string) {
 		flagSet.Int(name, 0, usage)
 	} else {
 		flagSet.IntP(name, short, 0, usage)
+	}
+}
+
+// create an unsigned integer flag
+func keyUint(flagSet *pflag.FlagSet, name string, short string, usage string) {
+	if short == "" {
+		flagSet.Uint(name, 0, usage)
+	} else {
+		flagSet.UintP(name, short, 0, usage)
 	}
 }
 
