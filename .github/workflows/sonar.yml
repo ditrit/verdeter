@@ -45,7 +45,7 @@ jobs:
       - name: Run test app 
         run: |
           cd testapp/
-          TESTAPP_OFFSET=1 TESTAPP_1_ROOTNODE=12  go run main.go --config_path testapp_1.yml
+          TESTAPP_ROOTNODE=12  go run main.go --config_path .
       - uses: actions/upload-artifact@v3
         with:
           name: coverage

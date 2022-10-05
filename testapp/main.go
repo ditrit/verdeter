@@ -13,9 +13,8 @@ var myCommand = verdeter.NewVerdeterCommand(
 	``,
 
 	func(cfg *verdeter.VerdeterCommand, args []string) error {
-		println(args)
-		println("value for \"key=offset\":", viper.GetInt("offset"))
-		println("value for \"key=some.config\":", viper.GetString("some.config"))
+		println("args:", args)
+		println("value for \"key=some.config\":", viper.GetUint("some.config"))
 		println("value for \"key=rootnode\":", viper.GetInt("rootnode"))
 
 		// no error to return
@@ -33,6 +32,8 @@ func init() {
 
 	myCommand.GKey("config_path", verdeter.IsStr, "", "Path to the config directory/file")
 	myCommand.GKey("rootnode", verdeter.IsInt, "", "is root node")
+	myCommand.GKey("some.config", verdeter.IsUint, "", "is root node")
+	myCommand.SetRequired("some.config")
 	myCommand.SetNormalize("config_path", func(val interface{}) interface{} {
 		strval, ok := val.(string)
 		if ok && strval != "" {
