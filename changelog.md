@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 - Add Uint type for config keys. It prevents the user from creating a validator to check that the value is not <0 .
+- Add a validator named AuthorizedValues that check if the value of a config key is contained in a defined array of authorized values.
 
 ## [0.1.0] - 2022/09/06
 

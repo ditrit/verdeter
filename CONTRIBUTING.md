@@ -4,9 +4,9 @@ We use [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as guideline f
 
 Steps to release:
 - Create a new branch labeled `release/vX.Y.Z` from the latest `main`.
-- Improve the version number in `changelog.md` and `resources/api.go`.
+- Improve the version number in `changelog.md`.
 - Verify the content of the `changelog.md`.
-- Commit the modifications with the label `Release version X.Y.Z`.
+- Commit the modifications with the label `Release version vX.Y.Z`.
 - Create a pull request on github for this branch into `main`.
 - Once the pull request validated and merged, tag the `main` branch with `vX.Y.Z`
 - After the tag is pushed, make the release on the tag in GitHub
