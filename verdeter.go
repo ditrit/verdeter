@@ -15,6 +15,7 @@ const (
 	IsStr
 	IsInt
 	IsBool
+	IsUint
 )
 
 // return the name of the root command

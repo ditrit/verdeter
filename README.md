@@ -129,10 +129,14 @@ Then I want to add configuration to this command, for example to bind an address
 
 ```go
 // Adding a local key.
-// if you want sub command to inherit this flag, use (*verdeter.VerdeterCommand).GKey instead
 rootCommand.LKey("addr", verdeter.IsStr, "a", "bind to IPV4 addr")
 rootCommand.LKey("port", verdeter.IsInt, "p", "bind to TCP port")
+
+/* if you want sub commands to inherit this flag, 
+   use (*verdeter.VerdeterCommand).GKey instead */
 ```
+
+> The config types availables are `verdeter.IsStr`, `verdeter.IsInt`, `verdeter.IsUint` and `verdeter.IsBool`.
 
 A default value can be set for each config key
 
