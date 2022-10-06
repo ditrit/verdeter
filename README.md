@@ -9,7 +9,7 @@ It should be consider as a wrapper for cobra and viper that allow developers to 
 Verdeter allow developers to bind a posix complient flag, an environment variable and a variable in a config file to a viper key with a single line of code. 
 Verdeter also comes with extra features such as:
 - support for [normalize function](https://github.com/ditrit/verdeter/blob/main/docs/normalization/normalization.md), ex: `LowerString` (lower the input string)
-- support for [key specific checks](https://github.com/ditrit/verdeter/blob/main/docs/using_it_for_real/using_it_for_real.md), ex: `StringNotEmpty`(check if the input string is empty), `CheckIsHighPort`(check is the input integer is a high tcp port))
+- support for [key specific checks](https://github.com/ditrit/verdeter/blob/main/docs/using_it_for_real/using_it_for_real.md), ex: `StringNotEmpty`(check if the input string is empty), `CheckIsHighPort`(check is the input integer is a high tcp port), or `AuthorizedValues`(check if the value of a config key is contained in a defined array of authorized values))
 - support for constraints, ex: check for specific arch
 - support for dynamic default values (named *Computed values*), ex: set `time.Now().Unix()` as a default for a "time" key 
 
