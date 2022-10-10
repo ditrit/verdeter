@@ -2,11 +2,14 @@
 package verdeter
 
 import (
+	"errors"
 	"fmt"
+	"path"
+	"strings"
 
 	"github.com/ditrit/verdeter/models"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -63,44 +66,65 @@ func (verdeterCmd *VerdeterCommand) SetComputedValue(name string, fval models.De
 
 var fs = afero.NewOsFs()
 
-// InitConfig init Config management
-func InitConfig(verdeterCmd *VerdeterCommand) {
+var ErrConfigFileNotFound = errors.New("config file not found")
+
+// initConfig init Config management
+func initConfig(verdeterCmd *VerdeterCommand) error {
 	appname := verdeterCmd.GetAppName()
 	viper.SetEnvPrefix(appname)
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
 
+	var locations []string
 	var configPath = viper.GetString("config_path")
+	if configPath != "" {
+		locations = append(locations, configPath)
+	}
+
+	locations = append(locations, ".")
+	homeFolderLocation, err := homedir.Dir()
+	if err == nil {
+		locations = append(locations, path.Join(homeFolderLocation, ".config", appname)+"/")
+	}
+	locations = append(locations,
+		fmt.Sprintf("/etc/%s/", appname),
+	)
+	for _, location := range locations {
+		err = tryPath(location, appname)
+		if err != nil {
+			if errors.Is(err, ErrConfigFileNotFound) {
+				continue
+			}
+			return err
+		}
+		break
+
+	}
+	return nil
+}
+
+// try to read the configuration at the config path
+func tryPath(configPath string, appname string) error {
 	exists, err := afero.Exists(fs, configPath)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if !exists {
-		panic(
-			fmt.Errorf("path %q do not exists", configPath),
-		)
+		return ErrConfigFileNotFound
 	}
 	if isDirectory, _ := afero.IsDir(fs, configPath); isDirectory {
 		viper.AddConfigPath(configPath)
 		viper.SetConfigName(appname)
 	} else {
 		viper.SetConfigFile(configPath)
-
 	}
-	viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err != nil {
+	err = viper.ReadInConfig()
+	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found; ignore error if desired
-			panic("config file not found")
-		} else {
-			// Config file was found but another error was produced
-			panic(fmt.Errorf("config file was found but another error was produced: %s", err.Error()))
+			return ErrConfigFileNotFound
 		}
+		return fmt.Errorf("config file was found but another error was produced: %s", err.Error())
 	}
-
-}
-
-// Initialize handle initial configuration
-func (verdeterCmd *VerdeterCommand) Initialize() {
-	cobra.OnInitialize(func() { InitConfig(verdeterCmd) })
+	return nil
 }

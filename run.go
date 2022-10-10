@@ -16,6 +16,12 @@ func RunE(cfg *VerdeterCommand, runf func(cfg *VerdeterCommand, args []string) e
 // Create the a cobra compatible PreRunE function.
 func preRunCheckE(cfg *VerdeterCommand) func(*cobra.Command, []string) error {
 	return func(cobraCmd *cobra.Command, args []string) error {
+		if cfg.parentCmd == nil {
+			err := initConfig(cfg)
+			if err != nil {
+				return err
+			}
+		}
 		if err := cfg.Validate(); err != nil {
 			return fmt.Errorf("prerun check for %s failed. (Error=%q))", cfg.cmd.Name(), err.Error())
 		} else if len(args) != cfg.nbArgs {

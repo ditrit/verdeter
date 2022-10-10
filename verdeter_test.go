@@ -59,7 +59,8 @@ func TestNormalUse(t *testing.T) {
 	cfg.LKey("superkey", verdeter.IsInt, "", "test key in fixture dir")
 	cfg.SetDefault("superkey", -5)
 
-	cfg.LKey("myuintkey", verdeter.IsUint, "", "test uint key")
+	cfg.LKey("myuintkey", verdeter.IsUin
+	t, "", "test uint key")
 	cfg.SetDefault("myuintkey", 25)
 
 	cfg.SetNbArgs(0)
@@ -86,9 +87,9 @@ func TestNormalUse(t *testing.T) {
 
 }
 
-func TestForceConfigFile(t *testing.T) {
+func TestForceConfigFileValid(t *testing.T) {
 	cfg := verdeter.NewVerdeterCommand(
-		"test",
+		"superuncommonappnamevalid",
 		"a test command",
 		"whatever",
 		func(cfg *verdeter.VerdeterCommand, args []string) error {
@@ -96,12 +97,27 @@ func TestForceConfigFile(t *testing.T) {
 			return nil
 		},
 	)
-	cfg.Initialize()
 
 	cfg.GKey("config_path", verdeter.IsStr, "", "path to the config directory")
-
 	cfg.SetDefault("config_path", "./fixtures/1/")
-	viper.Set("config_path", "/truc/biule.yml")
-	assert.Panics(t, func() { cfg.Execute() }, "should panic")
 
+	assert.NotPanics(t, func() { cfg.Execute() })
+}
+
+func TestForceConfigFileInvalid(t *testing.T) {
+	cfg := verdeter.NewVerdeterCommand(
+		"superuncommonappnameinvalid",
+		"a test command",
+		"whatever",
+		func(cfg *verdeter.VerdeterCommand, args []string) error {
+			fmt.Printf("args=%v", args)
+			return nil
+		},
+	)
+
+	cfg.GKey("config_path", verdeter.IsStr, "", "path to the config directory")
+	cfg.SetDefault("config_path", "./fixtures/1/")
+
+	viper.Set("config_path", "./superuncommonappnameforaconfigfile.yml")
+	assert.NotPanics(t, func() { cfg.Execute() })
 }
