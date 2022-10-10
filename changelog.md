@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed 
+
+- fixed a bug in the command initialization that affected multicommand apps: the initialisation function ran multiples times instead of running one time on the root command. Now the initialisation is ran in the pre run step only on the root command.
+- fixed configuration search to be posix compliant.
+
 ### Added 
 
 - Add Uint type for config keys. It prevents the user from creating a validator to check that the value is not <0 .
