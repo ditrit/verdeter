@@ -23,7 +23,6 @@ func TestNormalUse(t *testing.T) {
 			return nil
 		},
 	)
-	cfg.Initialize()
 
 	// Test the conputed values works
 	cfg.GKey("computed", verdeter.IsInt, "", "a computed value")
@@ -59,8 +58,7 @@ func TestNormalUse(t *testing.T) {
 	cfg.LKey("superkey", verdeter.IsInt, "", "test key in fixture dir")
 	cfg.SetDefault("superkey", -5)
 
-	cfg.LKey("myuintkey", verdeter.IsUin
-	t, "", "test uint key")
+	cfg.LKey("myuintkey", verdeter.IsUint, "", "test uint key")
 	cfg.SetDefault("myuintkey", 25)
 
 	cfg.SetNbArgs(0)

@@ -191,13 +191,6 @@ rootCommand.SetRequired("addr")
 To actually run the command, use this code in your main.go
 
 ```go
-func init(){
-     // Initialize the command
-    rootCommand.Initialize()
-    // setup keys
-    // rootCommand.LKey("port", ve......
-
-}
 func main() {
    
 

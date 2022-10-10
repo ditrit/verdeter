@@ -28,8 +28,6 @@ func Execute() {
 }
 
 func init() {
-	myCommand.Initialize()
-
 	myCommand.GKey("config_path", verdeter.IsStr, "", "Path to the config directory/file")
 	myCommand.GKey("rootnode", verdeter.IsInt, "", "is root node")
 	myCommand.GKey("some.config", verdeter.IsUint, "", "is root node")
