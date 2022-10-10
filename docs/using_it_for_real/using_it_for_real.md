@@ -82,8 +82,6 @@ var verdeterRootCmd = verdeter.NewVerdeterCommand(
 
 func main() {
 	// Initialize the command
-	verdeterRootCmd.Initialize()
-
 	viper.Set("config_path", "./conf/")
 
 	// Set a new key named "time" with a shortcut named "t"

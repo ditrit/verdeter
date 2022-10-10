@@ -22,8 +22,6 @@ var verdeterRootCmd = verdeter.NewVerdeterCommand(
 	})
 
 func main() {
-	// Initialize the command
-	verdeterRootCmd.Initialize()
 
 	viper.Set("config_path", "./conf/")
 

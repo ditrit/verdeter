@@ -2,11 +2,11 @@
 
 Verdeter is a library to write configuration easily with cobra and viper for distributed applications. Verdeter bring the power of cobra and viper in a single library. 
 
-It should be consider as a wrapper for cobra and viper that allow developers to code faster.
+It should be consider as a wrapper for cobra and viper that allow developers to code apps that are POSIX compliant by default.
 
 > The api is susceptible to change at any point in time until the v1 is released.
 
-Verdeter allow developers to bind a posix complient flag, an environment variable and a variable in a config file to a viper key with a single line of code. 
+Verdeter allow developers to bind a posix compliant flag, an environment variable and a variable in a config file to a viper key with a single line of code. 
 Verdeter also comes with extra features such as:
 - support for [normalize function](https://github.com/ditrit/verdeter/blob/main/docs/normalization/normalization.md), ex: `LowerString` (lower the input string)
 - support for [key specific checks](https://github.com/ditrit/verdeter/blob/main/docs/using_it_for_real/using_it_for_real.md), ex: `StringNotEmpty`(check if the input string is empty), `CheckIsHighPort`(check is the input integer is a high tcp port), or `AuthorizedValues`(check if the value of a config key is contained in a defined array of authorized values))
@@ -191,13 +191,6 @@ rootCommand.SetRequired("addr")
 To actually run the command, use this code in your main.go
 
 ```go
-func init(){
-     // Initialize the command
-    rootCommand.Initialize()
-    // setup keys
-    // rootCommand.LKey("port", ve......
-
-}
 func main() {
    
 
