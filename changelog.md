@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The tasks in the CI are now ran in parallel. 
 
+### Fixed 
+
+- fixed a bug regarding the validation cascade in multicommand app. The validation function of a root Command  return an error on valid input when a subcommand was called.
+
 ## [0.2.1] - 2022/10/11
 
 ### Fixed 
