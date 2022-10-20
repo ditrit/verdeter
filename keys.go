@@ -20,6 +20,7 @@ func (verdeterCmd *VerdeterCommand) LKey(name string, valType models.ConfigType,
 // GKey defines a global flag for cobra bound to env and config file
 func (verdeterCmd *VerdeterCommand) GKey(name string, valType models.ConfigType, short string, usage string) error {
 	verdeterCmd.keyType[name] = valType
+	verdeterCmd.globalKeys = append(verdeterCmd.globalKeys, name)
 	return Key(verdeterCmd.cmd, name, valType, short, usage, true)
 }
 

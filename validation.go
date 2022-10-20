@@ -27,10 +27,10 @@ func (verdeterCmd *VerdeterCommand) NormalizeValues() {
 }
 
 // Validate checks if config keys have valid values
-func (verdeterCmd *VerdeterCommand) Validate() error {
+func (verdeterCmd *VerdeterCommand) Validate(isTargetCommand bool) error {
 
 	if verdeterCmd.parentCmd != nil {
-		err := verdeterCmd.parentCmd.Validate()
+		err := verdeterCmd.parentCmd.Validate(false)
 		if err != nil {
 			return fmt.Errorf("(from %q) an error happened while verifying parent command %q : %w", verdeterCmd.cmd.Name(), verdeterCmd.parentCmd.cmd.Name(), err)
 		}
@@ -39,7 +39,8 @@ func (verdeterCmd *VerdeterCommand) Validate() error {
 	verdeterCmd.NormalizeValues()
 
 	for key := range verdeterCmd.isRequired {
-		if !viper.IsSet(key) {
+		isGlobal := (!isTargetCommand && !Contains(key, verdeterCmd.globalKeys))
+		if !viper.IsSet(key) && !isGlobal {
 			return fmt.Errorf("%q is required", key)
 		}
 	}
@@ -47,7 +48,8 @@ func (verdeterCmd *VerdeterCommand) Validate() error {
 	for key, validator := range verdeterCmd.isValid {
 		valKey := viper.Get(key)
 		isSet := viper.IsSet(key)
-		if err := validator.Func(valKey); isSet && err != nil {
+		isGlobal := (!isTargetCommand && !Contains(key, verdeterCmd.globalKeys))
+		if err := validator.Func(valKey); !isGlobal && isSet && err != nil {
 			return fmt.Errorf("validation %q failed for key %q (ERROR=%w)", validator.Name, key, err)
 		}
 	}
@@ -59,4 +61,13 @@ func (verdeterCmd *VerdeterCommand) Validate() error {
 	}
 
 	return nil
+}
+
+func Contains[T comparable](sample T, list []T) bool {
+	for _, value := range list {
+		if sample == value {
+			return true
+		}
+	}
+	return false
 }

@@ -35,6 +35,9 @@ type VerdeterCommand struct {
 	// Required Keys
 	isRequired map[string]bool
 
+	// Local keys
+	globalKeys []string
+
 	// Required Number of args (no argument allowed by default)
 	nbArgs int
 
