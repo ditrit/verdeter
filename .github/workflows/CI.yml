@@ -76,14 +76,14 @@ jobs:
     needs: [unit-tests, check-style]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Download line coverage report
         uses: actions/download-artifact@v3
         with:
           name: coverage
           path: coverage.out
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
