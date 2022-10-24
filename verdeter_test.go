@@ -51,9 +51,9 @@ func TestNormalUse(t *testing.T) {
 	cfg.SetConstraint("contraintname", func() bool {
 		return true
 	})
-	cfg.SetRequired("envkey")
 	cfg.LKey("envkey", verdeter.IsStr, "", "test env key")
-	cfg.SetValidator("envkey", validators.StringNotEmpty)
+	cfg.SetRequired("envkey")
+	cfg.AddValidator("envkey", validators.StringNotEmpty)
 
 	cfg.LKey("superkey", verdeter.IsInt, "", "test key in fixture dir")
 	cfg.SetDefault("superkey", -5)
@@ -81,7 +81,7 @@ func TestNormalUse(t *testing.T) {
 	assert.Equal(t, 1234, viper.GetInt("computed"))
 	assert.Equal(t, "envkeyvalue", viper.GetString("envkey"))
 	assert.Equal(t, uint(25), viper.GetUint("myuintkey"))
-	assert.NoError(t, cfg.Validate(), "shouldn't ")
+	assert.NoError(t, cfg.Validate(true), "shouldn't ")
 
 }
 

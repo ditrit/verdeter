@@ -10,16 +10,18 @@ import (
 )
 
 // LKey defines a local flag for cobra bound to env and config file
-//
-// For an explanation of the difference
 func (verdeterCmd *VerdeterCommand) LKey(name string, valType models.ConfigType, short string, usage string) error {
-	verdeterCmd.keyType[name] = valType
+	verdeterCmd.localConfigKeys[name] = &ConfigKey{
+		Name: name,
+	}
 	return Key(verdeterCmd.cmd, name, valType, short, usage, false)
 }
 
 // GKey defines a global flag for cobra bound to env and config file
 func (verdeterCmd *VerdeterCommand) GKey(name string, valType models.ConfigType, short string, usage string) error {
-	verdeterCmd.keyType[name] = valType
+	verdeterCmd.globalConfigKeys[name] = &ConfigKey{
+		Name: name,
+	}
 	return Key(verdeterCmd.cmd, name, valType, short, usage, true)
 }
 

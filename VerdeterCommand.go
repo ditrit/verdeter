@@ -21,28 +21,20 @@ type VerdeterCommand struct {
 	// sub commands
 	subCmds map[string]*VerdeterCommand
 
-	keyType map[string]models.ConfigType
-
 	// function to call for the command
 	runE func(cfg *VerdeterCommand, args []string) error
 
-	// Validation functions
-	isValid map[string]models.Validator
+	// local config keys
+	localConfigKeys map[string]*ConfigKey
 
-	// Normalization functions
-	normalize map[string]models.NormalizationFunction
-
-	// Required Keys
-	isRequired map[string]bool
+	// global config keys
+	globalConfigKeys map[string]*ConfigKey
 
 	// Required Number of args (no argument allowed by default)
 	nbArgs int
 
 	// constraints are predicate functions to be satisfied as a prequisite to command execution
 	constraints map[string]models.ConstraintFunction
-
-	// computedValue function provides dynamic values as default for a key
-	computedValue map[string]models.DefaultValueFunction
 }
 
 // NewVerdeterCommand is the constructor for VerdeterCommand
@@ -61,12 +53,9 @@ func NewVerdeterCommand(use, shortDesc, longDesc string, runE func(verdeterCmd *
 	verdeterCmd.cmd = cobraCmd
 	verdeterCmd.runE = runE
 	verdeterCmd.subCmds = make(map[string]*VerdeterCommand)
-	verdeterCmd.isValid = make(map[string]models.Validator)
-	verdeterCmd.isRequired = make(map[string]bool)
-	verdeterCmd.normalize = make(map[string]models.NormalizationFunction)
-	verdeterCmd.keyType = make(map[string]models.ConfigType)
+	verdeterCmd.globalConfigKeys = make(map[string]*ConfigKey)
+	verdeterCmd.localConfigKeys = make(map[string]*ConfigKey)
 	verdeterCmd.constraints = make(map[string]models.ConstraintFunction)
-	verdeterCmd.computedValue = make(map[string]models.DefaultValueFunction)
 
 	return verdeterCmd
 }
@@ -88,4 +77,17 @@ func (verdeterCmd *VerdeterCommand) Execute() {
 	if err := verdeterCmd.cmd.Execute(); err != nil {
 		panic(err)
 	}
+}
+
+// Lookup returns the ConfigKey structure of the named config key, returning nil if none exists.
+func (verdeterCmd *VerdeterCommand) Lookup(configKeyName string) *ConfigKey {
+	configKey, ok := verdeterCmd.localConfigKeys[configKeyName]
+	if ok {
+		return configKey
+	}
+	configKey, ok = verdeterCmd.globalConfigKeys[configKeyName]
+	if ok {
+		return configKey
+	}
+	return nil
 }

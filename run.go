@@ -22,7 +22,7 @@ func preRunCheckE(cfg *VerdeterCommand) func(*cobra.Command, []string) error {
 				return err
 			}
 		}
-		if err := cfg.Validate(); err != nil {
+		if err := cfg.Validate(true); err != nil {
 			return fmt.Errorf("prerun check for %s failed. (Error=%q))", cfg.cmd.Name(), err.Error())
 		} else if len(args) != cfg.nbArgs {
 			return fmt.Errorf("prerun check for %s failed. Expected %v args, got %v", cfg.cmd.Name(), cfg.nbArgs, len(args))
