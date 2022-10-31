@@ -7,9 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A method named `Lookup` on the VerdeterCommand type. It allow to search in both local and global config keys. If no config key is found, it return nil.
+
 ### Changed
 
 - The tasks in the CI are now ran in parallel. 
+- The VerdeterCommand method `SetValidator` is now named `AddValidator`. Although the argument list did not change, the behavior did. Now the method will add a validator to the ConfigKey validators list.
+
+### Fixed 
+
+- fixed a bug regarding the validation cascade in multicommand app. The validation function of a root Command  return an error on valid input when a subcommand was called.
 
 ## [0.2.1] - 2022/10/11
 

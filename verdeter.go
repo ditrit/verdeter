@@ -21,6 +21,10 @@ const (
 	IsUint
 )
 
+func init() {
+	viper.SetFs(fs)
+}
+
 // return the name of the root command
 func (verdeterCmd *VerdeterCommand) GetAppName() string {
 	if verdeterCmd.parentCmd != nil {
@@ -35,13 +39,30 @@ func (verdeterCmd *VerdeterCommand) SetNbArgs(nb int) {
 }
 
 // Set the validator for a specific config key
-func (verdeterCmd *VerdeterCommand) SetValidator(name string, isValid models.Validator) {
-	verdeterCmd.isValid[name] = isValid
+func (verdeterCmd *VerdeterCommand) AddValidator(name string, validator models.Validator) {
+	configKey := verdeterCmd.Lookup(name)
+	if configKey == nil {
+		panic(panicMessageLookupFailed(name, "AddValidator"))
+	}
+	configKey.validators = append(configKey.validators, validator)
+}
+
+// return a string that describe the error and offer a piece of advice on how to solve it.
+func panicMessageLookupFailed(configKeyName, actionName string) string {
+	return fmt.Sprintf(
+		"the config key %q is not registered. A config key needs to be registered using the functions LKey of GKey before using %q",
+		configKeyName,
+		actionName,
+	)
 }
 
 // SetNormalize : function to normalize the value of a config Key (if set)
 func (verdeterCmd *VerdeterCommand) SetNormalize(name string, normalize models.NormalizationFunction) {
-	verdeterCmd.normalize[name] = normalize
+	configKey := verdeterCmd.Lookup(name)
+	if configKey == nil {
+		panic(panicMessageLookupFailed(name, "SetNormalize"))
+	}
+	configKey.normalizeFunc = normalize
 }
 
 // SetDefault : set default value for a key
@@ -51,7 +72,11 @@ func (verdeterCmd *VerdeterCommand) SetDefault(name string, value interface{}) {
 
 // SetRequired sets a key as required
 func (verdeterCmd *VerdeterCommand) SetRequired(name string) {
-	verdeterCmd.isRequired[name] = true
+	configKey := verdeterCmd.Lookup(name)
+	if configKey == nil {
+		panic(panicMessageLookupFailed(name, "SetRequired"))
+	}
+	configKey.required = true
 }
 
 // SetConstraint sets a constraint
@@ -60,8 +85,12 @@ func (verdeterCmd *VerdeterCommand) SetConstraint(msg string, constraint func() 
 }
 
 // SetComputedValue sets a value dynamically as the default for a key
-func (verdeterCmd *VerdeterCommand) SetComputedValue(name string, fval models.DefaultValueFunction) {
-	verdeterCmd.computedValue[name] = fval
+func (verdeterCmd *VerdeterCommand) SetComputedValue(name string, computedValue models.DefaultValueFunction) {
+	configKey := verdeterCmd.Lookup(name)
+	if configKey == nil {
+		panic(panicMessageLookupFailed(name, "SetComputedValue"))
+	}
+	configKey.computedValue = computedValue
 }
 
 var fs = afero.NewOsFs()
