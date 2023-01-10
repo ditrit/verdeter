@@ -12,6 +12,7 @@ import (
 )
 
 func TestNormalUse(t *testing.T) {
+	viper.Reset()
 	// set an env key for later
 	os.Setenv("TEST_ENVKEY", "envkeyvalue")
 	cfg := verdeter.NewVerdeterCommand(
@@ -86,6 +87,7 @@ func TestNormalUse(t *testing.T) {
 }
 
 func TestForceConfigFileValid(t *testing.T) {
+	viper.Reset()
 	cfg := verdeter.NewVerdeterCommand(
 		"superuncommonappnamevalid",
 		"a test command",
@@ -103,6 +105,7 @@ func TestForceConfigFileValid(t *testing.T) {
 }
 
 func TestForceConfigFileInvalid(t *testing.T) {
+	viper.Reset()
 	cfg := verdeter.NewVerdeterCommand(
 		"superuncommonappnameinvalid",
 		"a test command",
@@ -118,4 +121,71 @@ func TestForceConfigFileInvalid(t *testing.T) {
 
 	viper.Set("config_path", "./superuncommonappnameforaconfigfile.yml")
 	assert.NotPanics(t, func() { cfg.Execute() })
+}
+
+func TestSetRequiredPanicOnInvalidKey(t *testing.T) {
+	viper.Reset()
+	cfg := verdeter.NewVerdeterCommand(
+		"superuncommonappnameinvalid",
+		"a test command",
+		"whatever",
+		func(cfg *verdeter.VerdeterCommand, args []string) error {
+			fmt.Printf("args=%v", args)
+			return nil
+		},
+	)
+
+	assert.Panics(t,
+		func() { cfg.SetRequired("unknow string") },
+	)
+}
+
+func TestSetDefaultPanicOnInvalidKey(t *testing.T) {
+	viper.Reset()
+	cfg := verdeter.NewVerdeterCommand(
+		"superuncommonappnameinvalid",
+		"a test command",
+		"whatever",
+		func(cfg *verdeter.VerdeterCommand, args []string) error {
+			fmt.Printf("args=%v", args)
+			return nil
+		},
+	)
+
+	assert.Panics(t,
+		func() { cfg.SetDefault("unknow string", 125) },
+	)
+}
+func TestSetNormalizePanicOnInvalidKey(t *testing.T) {
+	viper.Reset()
+	cfg := verdeter.NewVerdeterCommand(
+		"superuncommonappnameinvalid",
+		"a test command",
+		"whatever",
+		func(cfg *verdeter.VerdeterCommand, args []string) error {
+			fmt.Printf("args=%v", args)
+			return nil
+		},
+	)
+
+	assert.Panics(t,
+		func() { cfg.SetNormalize("unknow string", nil) },
+	)
+}
+
+func TestAddValidatorPanicOnInvalidKey(t *testing.T) {
+	viper.Reset()
+	cfg := verdeter.NewVerdeterCommand(
+		"superuncommonappnameinvalid",
+		"a test command",
+		"whatever",
+		func(cfg *verdeter.VerdeterCommand, args []string) error {
+			fmt.Printf("args=%v", args)
+			return nil
+		},
+	)
+
+	assert.Panics(t,
+		func() { cfg.AddValidator("unknow string", validators.StringNotEmpty) },
+	)
 }
