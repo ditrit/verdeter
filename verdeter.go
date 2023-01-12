@@ -67,6 +67,10 @@ func (verdeterCmd *VerdeterCommand) SetNormalize(name string, normalize models.N
 
 // SetDefault : set default value for a key
 func (verdeterCmd *VerdeterCommand) SetDefault(name string, value interface{}) {
+	configKey := verdeterCmd.Lookup(name)
+	if configKey == nil {
+		panic(panicMessageLookupFailed(name, "SetDefault"))
+	}
 	viper.SetDefault(name, value)
 }
 
