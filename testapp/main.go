@@ -6,26 +6,29 @@ import (
 )
 
 var myCommand = verdeter.NewVerdeterCommand(
-	"myapp", // the name of the command
+	"math", // the name of the command
 
-	"myapp is a verdeter com",
+	"math app is a test application foir verdeter",
 
 	``,
 
 	func(cfg *verdeter.VerdeterCommand, args []string) error {
+		println("The root command does nothing but print some config keys")
 		println("args:", args)
 		println("value for \"key=some.config\":", viper.GetUint("some.config"))
 		println("value for \"key=rootnode\":", viper.GetInt("rootnode"))
-
-		// no error to return
 		return nil
 	})
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	myCommand.Execute()
-}
+var add = verdeter.NewVerdeterCommand(
+	"add",
+	"print the result of --int1 + --int2",
+	``,
+	func(cfg *verdeter.VerdeterCommand, args []string) error {
+		println("print the result of --int1 + --float2 (or -i + -f)")
+		println("result", viper.GetInt("int2")+viper.GetInt("int1"))
+		return nil
+	})
 
 func init() {
 	myCommand.GKey("config_path", verdeter.IsStr, "", "Path to the config directory/file")
@@ -41,10 +44,19 @@ func init() {
 			}
 			return strval
 		}
-
 		return nil
 	})
+	add.LKey("int1", verdeter.IsInt, "", "Integer 1")
+	add.LKey("int2", verdeter.IsInt, "", "Integer 2")
+	add.SetRequired("int1")
+	add.SetRequired("int2")
+	myCommand.AddSubCommand(add)
+}
 
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	myCommand.Execute()
 }
 
 func main() {

@@ -13,30 +13,42 @@ func (verdeterCmd *VerdeterCommand) Validate(isTargetCommand bool) error {
 			return fmt.Errorf("(from %q) an error happened while verifying parent command %q : %w", verdeterCmd.cmd.Name(), verdeterCmd.parentCmd.cmd.Name(), err)
 		}
 	}
+	listErrors := make([]error, 0)
 
 	// validate global config keys
 	for _, configKey := range verdeterCmd.globalConfigKeys {
-		err := configKey.Validate()
-		if err != nil {
-			return err
+		errs := configKey.Validate()
+		if errs != nil {
+			listErrors = append(listErrors, errs...)
 		}
 	}
 
 	// validate local config keys
 	if isTargetCommand {
 		for _, configKey := range verdeterCmd.localConfigKeys {
-			err := configKey.Validate()
-			if err != nil {
-				return err
+			errs := configKey.Validate()
+			if errs != nil {
+				listErrors = append(listErrors, errs...)
 			}
 		}
 	}
 
 	for constraintName, constraint := range verdeterCmd.constraints {
 		if !constraint() {
-			return fmt.Errorf("constraint %q is not respected", constraintName)
+			listErrors = append(listErrors,
+				fmt.Errorf("constraint %q is not respected", constraintName),
+			)
 		}
 	}
+	printErrors(listErrors)
+	if len(listErrors) == 0 {
+		return nil
+	}
+	return fmt.Errorf("validation failed")
+}
 
-	return nil
+func printErrors(listErrors []error) {
+	for _, err := range listErrors {
+		fmt.Println(err.Error())
+	}
 }
