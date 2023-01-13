@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a normalizer package.
 - Added `LowerString`, `UpperString` normalizers.
 - Added an URL validator.
+- Now all validation errors are displayed if there are any. Before verdeter quit on the first error.
 
 ### Fixed
 
@@ -21,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed an initialization bug. The initialization function did not run when a subcommand was called. This caused the command to fail it's validation step. 
+- Fixed an initialization bug. The initialization function did not run when a subcommand was called. This caused the command to fail it's validation step.
 
 ## [0.3.0] - 2022/10/31
 
