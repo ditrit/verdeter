@@ -83,11 +83,11 @@ func TestConfigKeyValidators(t *testing.T) {
 	}
 
 	viper.Set("test.ConfigKey", 0)
-	assert.Error(t, cf.CheckValidators())
+	assert.Len(t, cf.CheckValidators(), 2)
 	viper.Set("test.ConfigKey", 2)
-	assert.Error(t, cf.CheckValidators())
+	assert.Len(t, cf.CheckValidators(), 1)
 	viper.Set("test.ConfigKey", 12)
-	assert.NoError(t, cf.CheckValidators())
+	assert.Len(t, cf.CheckValidators(), 0)
 }
 
 func TestConfigKeyValidate(t *testing.T) {
@@ -99,7 +99,7 @@ func TestConfigKeyValidate(t *testing.T) {
 				Name: "greater than 1",
 				Func: func(input interface{}) error {
 					intVal := input.(int)
-					if intVal < 1 {
+					if intVal <= 1 {
 						return errors.New("greater than 1")
 					}
 					return nil
@@ -108,7 +108,8 @@ func TestConfigKeyValidate(t *testing.T) {
 				Name: "greater than 5",
 				Func: func(input interface{}) error {
 					intVal := input.(int)
-					if intVal < 5 {
+
+					if intVal <= 5 {
 						return errors.New("greater than 5")
 					}
 					return nil
@@ -124,13 +125,18 @@ func TestConfigKeyValidate(t *testing.T) {
 			return intVal + 1
 		},
 	}
-
-	assert.NoError(t, cf.Validate())
+	viper.Reset()
+	assert.Len(t, cf.Validate(), 0)
 	assert.Equal(t, 51, viper.GetInt("test.ConfigKey"))
+
+	viper.Reset()
 	viper.Set("test.ConfigKey", -1)
-	assert.Error(t, cf.Validate())
+	assert.Len(t, cf.Validate(), 2)
+	viper.Reset()
+
 	viper.Set("test.ConfigKey", 1)
-	assert.Error(t, cf.Validate())
+	assert.Len(t, cf.Validate(), 1)
+
 	viper.Set("test.ConfigKey", 11)
-	assert.NoError(t, cf.Validate())
+	assert.Len(t, cf.Validate(), 0)
 }
