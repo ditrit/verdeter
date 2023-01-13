@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug: the SetDefault method now panic if called on an undeclared config key.
 
+### Changed
+
+- The signature of AuthorizedValues was altered to make it more understandable.
+
 ## [0.3.1] - 2022/11/09
 
 ### Fixed
