@@ -1,6 +1,10 @@
 # TestApp for verdeter
 
-Some inputs and associated outputs. When testing modifications, you should have this result.
+This golang module is a test app for verdeter.
+This test app use all the major feature of verdeter.
+
+This app and this file will be kept up to date with verdeter development.
+You can see some bash lines and their associated outputs.
 
 ```txt
 $ MATH_ORGANISATION_NAME=ditrit go run main.go
@@ -40,5 +44,5 @@ panic: validation failed (2 errors)
 ```txt
 $ go run main.go add --int1 12 --int2 5
 print the result of --int1 + --int2
-result 17
+result: 17
 ```
