@@ -23,21 +23,22 @@ type ConfigKey struct {
 // 2. Normalize the value
 // 3. Check the required constraint
 // 4. Check the validators
-func (configKey *ConfigKey) Validate() error {
+func (configKey *ConfigKey) Validate() []error {
 	configKey.ComputeDefaultValue()
 	configKey.Normalize()
+	result := make([]error, 0)
 
 	err := configKey.CheckRequired()
 	if err != nil {
-		return err
+		return append(result, err)
 	}
 
-	err = configKey.CheckValidators()
-	if err != nil {
-		return err
+	errs := configKey.CheckValidators()
+	if errs != nil {
+		result = append(result, errs...)
 	}
 
-	return nil
+	return result
 }
 
 // Normalize the config key using the normalization function if provided
@@ -67,7 +68,8 @@ func (configKey *ConfigKey) CheckRequired() error {
 // Return an error on validation failure of one of the validator.
 //
 // Return on first failure, the remaining validator are not ran.
-func (configKey *ConfigKey) CheckValidators() error {
+func (configKey *ConfigKey) CheckValidators() []error {
+	result := make([]error, 0)
 	for _, validator := range configKey.validators {
 		if !viper.IsSet(configKey.Name) {
 			continue
@@ -75,8 +77,10 @@ func (configKey *ConfigKey) CheckValidators() error {
 		valKey := viper.Get(configKey.Name)
 		err := validator.Func(valKey)
 		if err != nil {
-			return fmt.Errorf("validation %q failed for key %q (ERROR=%w)", validator.Name, configKey.Name, err)
+			result = append(result,
+				fmt.Errorf("validator %q failed for key %q: %q", validator.Name, configKey.Name, err.Error()),
+			)
 		}
 	}
-	return nil
+	return result
 }

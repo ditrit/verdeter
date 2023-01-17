@@ -13,30 +13,56 @@ func (verdeterCmd *VerdeterCommand) Validate(isTargetCommand bool) error {
 			return fmt.Errorf("(from %q) an error happened while verifying parent command %q : %w", verdeterCmd.cmd.Name(), verdeterCmd.parentCmd.cmd.Name(), err)
 		}
 	}
+	listErrors := make([]error, 0)
 
 	// validate global config keys
-	for _, configKey := range verdeterCmd.globalConfigKeys {
-		err := configKey.Validate()
-		if err != nil {
-			return err
-		}
-	}
+	listErrors = validateGlobalKeys(verdeterCmd, listErrors)
 
 	// validate local config keys
 	if isTargetCommand {
-		for _, configKey := range verdeterCmd.localConfigKeys {
-			err := configKey.Validate()
-			if err != nil {
-				return err
-			}
-		}
+		listErrors = validateLocalKeys(verdeterCmd, listErrors)
 	}
 
 	for constraintName, constraint := range verdeterCmd.constraints {
 		if !constraint() {
-			return fmt.Errorf("constraint %q is not respected", constraintName)
+			listErrors = append(listErrors,
+				fmt.Errorf("constraint %q is not respected", constraintName),
+			)
 		}
 	}
-
+	if len(listErrors) != 0 {
+		printErrors(listErrors)
+		return fmt.Errorf("validation failed (%d errors)", len(listErrors))
+	}
 	return nil
+}
+
+// validateLocalKeys: validate global config keys
+func validateLocalKeys(verdeterCmd *VerdeterCommand, listErrors []error) []error {
+	for _, configKey := range verdeterCmd.localConfigKeys {
+		errs := configKey.Validate()
+		if errs != nil {
+			listErrors = append(listErrors, errs...)
+		}
+	}
+	return listErrors
+}
+
+// validateGlobalKeys: validate local config keys
+func validateGlobalKeys(verdeterCmd *VerdeterCommand, listErrors []error) []error {
+	for _, configKey := range verdeterCmd.globalConfigKeys {
+		errs := configKey.Validate()
+		if errs != nil {
+			listErrors = append(listErrors, errs...)
+		}
+	}
+	return listErrors
+}
+
+// printErrors print the error in a clean way.
+func printErrors(listErrors []error) {
+	fmt.Println("Some errors were collected during initialization:")
+	for _, err := range listErrors {
+		fmt.Println("-", err.Error())
+	}
 }

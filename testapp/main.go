@@ -1,37 +1,38 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/ditrit/verdeter"
+	"github.com/ditrit/verdeter/models"
 	"github.com/spf13/viper"
 )
 
 var myCommand = verdeter.NewVerdeterCommand(
-	"myapp", // the name of the command
+	"math", // the name of the command
 
-	"myapp is a verdeter com",
+	"math app is a test application for verdeter",
 
 	``,
 
 	func(cfg *verdeter.VerdeterCommand, args []string) error {
-		println("args:", args)
-		println("value for \"key=some.config\":", viper.GetUint("some.config"))
-		println("value for \"key=rootnode\":", viper.GetInt("rootnode"))
-
-		// no error to return
+		println("The root command does nothing but print the config key 'organisation.name'")
+		println("value for \"key=organisation.name\":", viper.GetString("organisation.name"))
 		return nil
 	})
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	myCommand.Execute()
-}
+var add = verdeter.NewVerdeterCommand(
+	"add",
+	"print the result of --int1 + --int2",
+	``,
+	func(cfg *verdeter.VerdeterCommand, args []string) error {
+		println("print the result of --int1 + --int2")
+		println("result:", viper.GetInt("int2")+viper.GetInt("int1"))
+		return nil
+	})
 
 func init() {
 	myCommand.GKey("config_path", verdeter.IsStr, "", "Path to the config directory/file")
-	myCommand.GKey("rootnode", verdeter.IsInt, "", "is root node")
-	myCommand.GKey("some.config", verdeter.IsUint, "", "is root node")
-	myCommand.SetRequired("some.config")
 	myCommand.SetNormalize("config_path", func(val interface{}) interface{} {
 		strval, ok := val.(string)
 		if ok && strval != "" {
@@ -41,10 +42,40 @@ func init() {
 			}
 			return strval
 		}
-
 		return nil
 	})
+	myCommand.GKey("organisation.name", verdeter.IsStr, "", "An organisation name")
+	myCommand.SetRequired("organisation.name")
 
+	add.LKey("int1", verdeter.IsInt, "", "Integer 1")
+	add.LKey("int2", verdeter.IsInt, "", "Integer 2")
+	add.SetRequired("int1")
+	add.SetRequired("int2")
+
+	over0 := models.Validator{
+		Name: "Superior to 0",
+		Func: func(input interface{}) (err error) {
+			intVal, ok := input.(int)
+			if !ok {
+				return errors.New("rong type")
+			}
+			if intVal < 0 {
+				return errors.New("under1")
+			}
+
+			return nil
+		},
+	}
+	add.AddValidator("int1", over0)
+	add.AddValidator("int2", over0)
+
+	myCommand.AddSubCommand(add)
+}
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	myCommand.Execute()
 }
 
 func main() {
