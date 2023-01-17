@@ -7,9 +7,9 @@ import (
 )
 
 // Return a Validator that check if the value received in the validation process is contained in the array of authorized values.
-func AuthorizedValues[T comparable](name string, authorizedValues ...T) models.Validator {
+func AuthorizedValues[T comparable](authorizedValues ...T) models.Validator {
 	return models.Validator{
-		Name: name,
+		Name: "authorized values",
 		Func: func(input interface{}) (err error) {
 			inputAsT, ok := input.(T)
 			if !ok {

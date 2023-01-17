@@ -14,9 +14,8 @@ func TestContains(t *testing.T) {
 
 func TestAuthorizedValuesInt(t *testing.T) {
 	set := []int{1, 2, 3, 4}
-	validator := AuthorizedValues("integer list", set...)
+	validator := AuthorizedValues(set...)
 	assert.NotNil(t, validator)
-	assert.Equal(t, "integer list", validator.Name)
 	assert.NoError(t, validator.Func(1))
 	assert.Error(t, validator.Func("12"))
 	assert.Error(t, validator.Func(5))
@@ -24,9 +23,8 @@ func TestAuthorizedValuesInt(t *testing.T) {
 
 func TestAuthorizedValuesString(t *testing.T) {
 	set := []string{"1", "2", "3", "4"}
-	validator := AuthorizedValues("string list", set...)
+	validator := AuthorizedValues(set...)
 	assert.NotNil(t, validator)
-	assert.Equal(t, "string list", validator.Name)
 	assert.NoError(t, validator.Func("1"))
 	assert.Error(t, validator.Func("12"))
 	assert.Error(t, validator.Func(4))
@@ -34,9 +32,8 @@ func TestAuthorizedValuesString(t *testing.T) {
 
 func TestAuthorizedValuesUint(t *testing.T) {
 	set := []uint{1, 2, 3, 4}
-	validator := AuthorizedValues("uint list", set...)
+	validator := AuthorizedValues(set...)
 	assert.NotNil(t, validator)
-	assert.Equal(t, "uint list", validator.Name)
 	assert.NoError(t, validator.Func(uint(1)))
 	assert.Error(t, validator.Func("12"))
 	assert.Error(t, validator.Func(uint(5)))
