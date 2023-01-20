@@ -25,17 +25,10 @@ func init() {
 	viper.SetFs(fs)
 }
 
-// return the name of the root command
+// GetAppName return the name of the root command
 func (verdeterCmd *VerdeterCommand) GetAppName() string {
-	if verdeterCmd.parentCmd != nil {
-		return verdeterCmd.parentCmd.GetAppName()
-	}
-	return verdeterCmd.cmd.Name()
-}
-
-// SetNbArgs : function to fix the number of args
-func (verdeterCmd *VerdeterCommand) SetNbArgs(nb int) {
-	verdeterCmd.nbArgs = nb
+	rootCommand := verdeterCmd.getRootCommand()
+	return rootCommand.cmd.Name()
 }
 
 // Set the validator for a specific config key
