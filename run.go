@@ -2,30 +2,52 @@ package verdeter
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
-// Create the a cobra compatible RunE function
-func RunE(cfg *VerdeterCommand, runf func(cfg *VerdeterCommand, args []string) error) func(*cobra.Command, []string) error {
-	return func(cobraCmd *cobra.Command, args []string) error {
-		return runf(cfg, args)
+// buildPreRunCheckE create a cobra compatible PreRunE function.
+func (verdeterCmd *VerdeterCommand) buildPreRunCheckE(preRunE func(cobraCmd *cobra.Command, args []string) error) func(*cobra.Command, []string) error {
+	if preRunE == nil {
+		return nil
 	}
-}
-
-// Create the a cobra compatible PreRunE function.
-func preRunCheckE(cfg *VerdeterCommand) func(*cobra.Command, []string) error {
 	return func(cobraCmd *cobra.Command, args []string) error {
-		err := initConfig(cfg)
+		err := verdeterCmd.initAndValidate()
 		if err != nil {
 			return err
 		}
-
-		if err := cfg.Validate(true); err != nil {
-			return err
-		} else if len(args) != cfg.nbArgs {
-			return fmt.Errorf("expected %v args, got %v", cfg.nbArgs, len(args))
+		if preRunE == nil {
+			return nil
 		}
-		return nil
+		return preRunE(cobraCmd, args)
+	}
+}
+
+// initAndValidate initialize the command
+func (verdeterCmd *VerdeterCommand) initAndValidate() error {
+	err := initConfig(verdeterCmd)
+	if err != nil {
+		return err
+	}
+	if err := verdeterCmd.Validate(true); err != nil {
+		return fmt.Errorf("prerun check for %s failed. (Error=%q))", verdeterCmd.cmd.Name(), err.Error())
+	}
+	return nil
+}
+
+// buildPreRunCheck create a cobra compatible PreRun function.
+func (verdeterCmd *VerdeterCommand) buildPreRunCheck(preRun func(cobraCmd *cobra.Command, args []string)) func(*cobra.Command, []string) {
+
+	return func(cobraCmd *cobra.Command, args []string) {
+		err := verdeterCmd.initAndValidate()
+		if err != nil {
+			fmt.Printf("An error was returned: %s\n", err.Error())
+			os.Exit(1)
+		}
+		if preRun == nil {
+			return
+		}
+		preRun(cobraCmd, args)
 	}
 }

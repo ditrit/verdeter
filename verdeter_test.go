@@ -62,8 +62,6 @@ func TestNormalUse(t *testing.T) {
 	cfg.LKey("myuintkey", verdeter.IsUint, "", "test uint key")
 	cfg.SetDefault("myuintkey", 25)
 
-	cfg.SetNbArgs(0)
-
 	sub := verdeter.NewVerdeterCommand(
 		"sub",
 		"a sub command",

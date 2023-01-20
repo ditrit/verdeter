@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `LowerString`, `UpperString` normalizers.
 - Added an URL validator.
 - Now all validation errors are displayed if there are any. Before verdeter quit on the first error.
+- Now all natives feature of cobra are available through the VerdeterConfig type and the build function.
 
 ### Fixed
 

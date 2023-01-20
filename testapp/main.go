@@ -2,24 +2,24 @@ package main
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ditrit/verdeter"
 	"github.com/ditrit/verdeter/models"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var myCommand = verdeter.NewVerdeterCommand(
-	"math", // the name of the command
-
-	"math app is a test application for verdeter",
-
-	``,
-
-	func(cfg *verdeter.VerdeterCommand, args []string) error {
-		println("The root command does nothing but print the config key 'organisation.name'")
-		println("value for \"key=organisation.name\":", viper.GetString("organisation.name"))
-		return nil
-	})
+var myCommand = verdeter.BuildVerdeterCommand(verdeter.VerdeterConfig{
+	Use:         "math",
+	Long:        "math app is a test application for verdeter",
+	Annotations: map[string]string{},
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("The root command does nothing but print the config key 'organisation.name'")
+		fmt.Println("value for \"key=organisation.name\":", viper.GetString("organisation.name"))
+	},
+	RunE: nil,
+})
 
 var add = verdeter.NewVerdeterCommand(
 	"add",
